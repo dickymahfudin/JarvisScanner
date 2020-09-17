@@ -1,6 +1,7 @@
 import React, {useState} from 'react';
 import {Text, StyleSheet, TouchableOpacity} from 'react-native';
 import QRScenner from 'react-native-qrcode-scanner';
+import {IdConsumer} from '../../Context';
 
 const styles = StyleSheet.create({
   container: {
@@ -23,14 +24,32 @@ const styles = StyleSheet.create({
 });
 
 const QRscanner = ({navigation}) => {
-  const [state, setstate] = useState({qr: 'Dism'});
+  const [state, setstate] = useState({qr: '', id: ''});
+  let contex = IdConsumer._currentValue;
 
   const ifScaned = (e) => {
-    fetch('https://jsonplaceholder.typicode.com/todos/1')
+    let url = 'http://192.168.2.8:8069/api/product/';
+    fetch(url, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        jsonrpc: '2.0',
+        params: {barcode: e.data},
+      }),
+    })
       .then((response) => response.json())
-      .then((json) => console.log(json));
-    setstate({qr: e.data});
-    navigation.navigate('Odoo');
+      .then((json) => {
+        setstate({...state, id: json.result.id});
+
+        let urlOdoo = `http://192.168.2.8:8069/web#id=${json.result.id}&action=185&model=product.template&view_type=form&menu_id=84`;
+        console.log(urlOdoo);
+        contex.changeId(urlOdoo);
+        navigation.navigate('Odoo');
+      })
+      .catch((er) => console.log(er));
+    setstate({...state, qr: e.data});
   };
 
   return (
@@ -40,7 +59,6 @@ const QRscanner = ({navigation}) => {
         onRead={ifScaned}
         reactivate={true}
         permissionDialogMessage="Need Permission To Access Camera"
-        reactivateTimeout={60}
         showMarker={true}
         markerStyle={styles.content}
         bottomContent={

@@ -13,6 +13,8 @@ target 'jarvisScenner' do
   pod 'Permission-Camera', :path => "#{permissions_path}/Camera.podspec"
   pod 'RNPermissions', :path => '../node_modules/react-native-permissions'
 
+  pod 'react-native-cookies', :path => '../node_modules/@react-native-community/cookies'
+
   target 'jarvisScennerTests' do
     inherit! :complete
     # Pods for testing
