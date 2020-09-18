@@ -17,6 +17,11 @@ const WebOdoo = ({url}) => {
         startInLoadingState={true}
         renderLoading={renderLoading}
         source={{uri: url}}
+        renderError={(errorName) => console.log('ERROR', errorName)}
+        onError={(syntheticEvent) => {
+          const {nativeEvent} = syntheticEvent;
+          console.warn('WebView error: ', nativeEvent);
+        }}
       />
     </>
   );
