@@ -23,7 +23,9 @@ const styles = StyleSheet.create({
   TextResult: {
     fontSize: 30,
     color: 'rgb(0,122,255)',
-    textAlign: 'center',
+    position: 'absolute',
+    bottom: 0,
+    left: 10,
   },
   cameraStyle: {
     height: '50%',
@@ -34,10 +36,11 @@ const styles = StyleSheet.create({
 });
 
 const QRscanner = ({navigation}) => {
-  const [state, setstate] = useState({qr: 'JARVIS SCANNER'});
+  const [state, setstate] = useState({qr: 'JARVIS SCANNER', status: true});
   let contex = IdConsumer._currentValue;
 
   const ifScaned = (e) => {
+    setstate({qr: 'Loading... fetch Data, Please Wait', status: false});
     let url = 'http://192.168.2.8:8069/api/product/';
     fetch(url, {
       method: 'POST',
@@ -56,26 +59,30 @@ const QRscanner = ({navigation}) => {
           let urlOdoo = `http://192.168.2.8:8069/web#id=${json.result.id}&action=185&model=product.template&view_type=form&menu_id=84`;
           contex.changeId(urlOdoo);
           navigation.navigate('Page');
-          return setstate({...state, qr: id});
+          return setstate({qr: id, status: true});
         }
-        return setstate({...state, qr: 'Upps, Qr Code Salah'});
+        return setstate({qr: 'Upps, Qr Code Salah', status: true});
       })
       .catch((er) => {
-        setstate({...state, qr: 'Server Error Hubungi Admin'});
+        setstate({qr: 'Server Error Hubungi Admin', status: true});
       });
   };
 
   return (
     <>
-      <QRScenner
-        containerStyle={styles.container}
-        onRead={ifScaned}
-        reactivate={true}
-        permissionDialogMessage="Need Permission To Access Camera"
-        showMarker={true}
-        markerStyle={styles.marker}
-        cameraStyle={styles.cameraStyle}
-      />
+      {state.status && (
+        <>
+          <QRScenner
+            containerStyle={styles.container}
+            onRead={ifScaned}
+            reactivate={true}
+            permissionDialogMessage="Need Permission To Access Camera"
+            showMarker={true}
+            markerStyle={styles.marker}
+            cameraStyle={styles.cameraStyle}
+          />
+        </>
+      )}
       <Text style={styles.TextResult}>{state.qr}</Text>
     </>
   );
