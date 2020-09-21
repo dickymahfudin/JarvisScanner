@@ -1,5 +1,5 @@
 import React, {useState} from 'react';
-import {Text, StyleSheet, TouchableOpacity} from 'react-native';
+import {Text, StyleSheet} from 'react-native';
 import QRScenner from 'react-native-qrcode-scanner';
 import {IdConsumer} from '../../Context';
 
@@ -52,11 +52,10 @@ const QRscanner = ({navigation}) => {
       .then((response) => response.json())
       .then((json) => {
         let id = json.result.id;
-        console.log(id);
         if (id) {
           let urlOdoo = `http://192.168.2.8:8069/web#id=${json.result.id}&action=185&model=product.template&view_type=form&menu_id=84`;
           contex.changeId(urlOdoo);
-          navigation.navigate('Odoo');
+          navigation.navigate('Page');
           return setstate({...state, qr: id});
         }
         return setstate({...state, qr: 'Upps, Qr Code Salah'});
